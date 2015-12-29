@@ -43,5 +43,6 @@ RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
         && rm -rf /var/lib/apt/*
 COPY mysql_start.sh /mysql_start.sh
 COPY xtrabackup_start.sh /xtrabackup_start.sh
+COPY mysql_client.sh /mysql_client.sh
 EXPOSE 3306
 CMD        ["/mysql_start.sh"]
