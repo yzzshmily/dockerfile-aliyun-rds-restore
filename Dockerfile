@@ -2,7 +2,7 @@ FROM debian:jessie
 
 RUN sed -i 's/httpredir.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && find /var/lib/apt -type f -exec rm {} \+ 
 
-ENV MYSQL_VERSION=mysql-5.5.18 MYSQL_HOME=/usr/local/mysql PERCONA_XTRABACKUP_VERSION=percona-xtrabackup-2.2.13 PERCONA_XTRABACKUP_HOME=/usr/local/xtrabackup PATH=$PATH:$MYSQL_HOME/bin:$PERCONA_XTRABACKUP_HOME/bin
+ENV MYSQL_VERSION=mysql-5.5.18 MYSQL_HOME=/usr/local/mysql PERCONA_XTRABACKUP_VERSION=percona-xtrabackup-2.2.13 PERCONA_XTRABACKUP_HOME=/usr/local/xtrabackup ENV PATH=$PATH:$MYSQL_HOME/bin:$PERCONA_XTRABACKUP_HOME/bin
 
 #compile tool
 ENV MYSQL_COMPILE_TOOL "wget gcc make cmake g++"
