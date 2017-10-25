@@ -1,8 +1,8 @@
 FROM debian:jessie
 
-RUN sed -i 's/httpredir.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && find /var/lib/apt -type f -exec rm {} \+ 
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && find /var/lib/apt -type f -exec rm {} \+
 
-ENV MYSQL_VERSION=mysql-5.5.18 MYSQL_HOME=/usr/local/mysql PERCONA_XTRABACKUP_VERSION=percona-xtrabackup-2.2.13 PERCONA_XTRABACKUP_HOME=/usr/local/xtrabackup
+ENV MYSQL_VERSION=mysql-5.6.36 MYSQL_HOME=/usr/local/mysql PERCONA_XTRABACKUP_VERSION=percona-xtrabackup-2.4.8 PERCONA_XTRABACKUP_HOME=/usr/local/xtrabackup
 ENV PATH $PATH:$MYSQL_HOME/bin:$PERCONA_XTRABACKUP_HOME/bin
 
 #compile tool
@@ -16,12 +16,12 @@ RUN apt-get update && apt-get install -y $BACKUP_COMPILE_TOOL --no-install-recom
 #runtime dep
 RUN apt-get update && apt-get install -y libaio1 libncurses5 zlib1g libgcrypt20 libpod2-base-perl --fix-missing
 #compile dep
-ENV BACKUP_COMPILE_DEP "libaio-dev libncurses-dev zlib1g-dev libgcrypt11-dev"
+ENV BACKUP_COMPILE_DEP "build-essential flex bison automake autoconf  vim-common libtool libaio-dev libncurses-dev zlib1g-dev libgcrypt11-dev libev-dev libcurl4-gnutls-dev"
 RUN apt-get update && apt-get install -y $BACKUP_COMPILE_DEP --no-install-recommends --fix-missing
 
-RUN cd /home && wget "http://cdn.mysql.com/archives/mysql-5.5/$MYSQL_VERSION.tar.gz" \
+RUN cd /home && wget "http://mirrors.sohu.com/mysql/MySQL-5.6/$MYSQL_VERSION.tar.gz" \
 	&& apt-get update && apt-get install -y ca-certificates --fix-missing \
-	&& wget "https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.2.13/source/tarball/$PERCONA_XTRABACKUP_VERSION.tar.gz" 
+	&& wget "https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.8/source/tarball/$PERCONA_XTRABACKUP_VERSION.tar.gz"
 
 RUN cd /home && tar -xzf $MYSQL_VERSION.tar.gz && cd $MYSQL_VERSION \
         && cmake -DCMAKE_INSTALL_PREFIX=$MYSQL_HOME \
@@ -32,7 +32,7 @@ RUN cd /home && tar -xzf $MYSQL_VERSION.tar.gz && cd $MYSQL_VERSION \
 VOLUME ["/usr/local/mysql/conf","/usr/local/mysql/data"]
 
 RUN cd /home && tar -xzf $PERCONA_XTRABACKUP_VERSION.tar.gz && cd $PERCONA_XTRABACKUP_VERSION \
-	&& cmake -DBUILD_CONFIG=xtrabackup_release -DWITH_MAN_PAGES=OFF \
+	&& cmake -DBUILD_CONFIG=xtrabackup_release -DWITH_MAN_PAGES=OFF  -DDOWNLOAD_BOOST=1 -DWITH_BOOST=/tmp\
 	&& make -j"$(nproc)" && make install
 
 RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
